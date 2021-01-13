@@ -1,0 +1,23 @@
+SELECT
+    *
+FROM device AS d
+    JOIN device2cat AS dc
+        ON dc.device_id = d.id
+;
+select * from device
+left join
+select * from device2cat where cat_type="computer";
+on
+
+select *
+from
+    device as d
+join
+    (select * from device2cat where cat_type="huawei") as t2
+on
+    d.id = t2.device_id
+    ;
+mobile10
+Samsung galaxy s20
+img/lab/samsung-galaxy-s20.webp
+Samsung Galaxy S20 FE är en smartphone och multimediaenhet som kombinerar kraftfull prestanda med AI bildprocess för professionella bilder, en trippel bakre kamera och en spelupplevelse med bra flyt.

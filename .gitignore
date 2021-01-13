@@ -1,0 +1,8 @@
+/.bin
+/build
+/cache
+/vendor
+/theme
+memory::
+composer.lock
+.phpunit.result.cache

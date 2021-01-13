@@ -1,0 +1,3 @@
+
+
+insert into comments(id,comment,post_id,user_id,comment_reply_id) values (1,"1. Remove it from the plastic pot and carefully remove as much of the moss as you can.  2. Cut away any shriveled rotten or blackened roots.   3. Set the plant into the pot and fill in around it with potting mixture.",1,1,1);

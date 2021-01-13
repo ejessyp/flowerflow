@@ -1,0 +1,4 @@
+id,username,firstname,lastname,password,email,type
+,doe,doe,ericsson,doe,doe@123.com,user
+,admin,admin,petersson,admin,admin@gmail.com,admin
+,waleed,waleed,Abdeen,123456,waleed.abdeen@bth.se,admin

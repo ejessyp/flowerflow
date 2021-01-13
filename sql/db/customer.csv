@@ -1,0 +1,5 @@
+id,username,password,type,firstname,lastname,email,telephone,postcode,city,country,address
+,nelly,nelly,user,Nelly,Ericsson,nelly@gmail.com,070 111 456,111 15,Karlskrona,Sverige,Gul hus 8
+,doe,doe,user,Doe,Himmelsson,doe@123.com,,,,,,
+,admin,admin,admin,Admin,Petersson,admin@gmail.com,045512345,371 64,Karlskrona,Sverige,Vit hus 8
+,waleed,waleed,admin,Waleed,Abdeen,waleed.abdeen@bth.se,,,,,,
