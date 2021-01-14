@@ -1,6 +1,6 @@
 {
-    "name" : "bthpan/FlowerFlow",
-    "description": "FlowerFlow project for ramverk1 in BTH.",
+    "name" : "bthpan/flowerflow",
+    "description": "Flowerflow project for ramverk1 in BTH.",
     "license": "MIT",
     "minimum-stability": "beta",
     "prefer-stable": true,
