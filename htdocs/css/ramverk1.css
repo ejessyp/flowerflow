@@ -6854,6 +6854,13 @@ a.rm-button.rm-clicked .rm-button-face-2 {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+.userprofile {
+  display: flex;
+  flex-flow: row;
+  border: 1px solid #666;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
 .leftpost {
   flex-basis: 15%;
   display: flex;
@@ -6885,7 +6892,6 @@ a.rm-button.rm-clicked .rm-button-face-2 {
   background-color: #30DDEB;
 }
 .sortby li a {
-  color: #040404;
   text-decoration: none;
   margin: 0px;
   height: 40px;
@@ -6893,7 +6899,7 @@ a.rm-button.rm-clicked .rm-button-face-2 {
   text-align: center;
 }
 .sortby li a:hover {
-  background-color: #FCFCFC;
+  color: green;
 }
 ul,
 li,
@@ -6991,4 +6997,16 @@ body {
 }
 .NoShowAcceptButton {
   display: none;
+}
+.accepted {
+  color: green;
+}
+.profileposts {
+  width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid grey;
+  background-color: #C1B0A6;
+}
+.profileposts a {
+  color: #000;
 }

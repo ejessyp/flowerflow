@@ -25,19 +25,14 @@ return [
             "title" => "View by tags.",
         ],
         [
-            "text" => "About",
-            "url" => "about",
-            "title" => "About this websites.",
-        ],
-        [
             "text" => "User",
             "url" => "user",
             "title" => "User Profile.",
         ],
         [
-            "text" => "Verktyg",
-            "url" => "verktyg",
-            "title" => "Verktyg och möjligheter för utveckling.",
+            "text" => "About",
+            "url" => "about",
+            "title" => "About this websites.",
         ],
     ],
 ];

@@ -20,25 +20,36 @@ class UserController implements ContainerInjectableInterface
     use ContainerInjectableTrait;
 
 
-
     /**
      * @var $data description
      */
-    //private $data;
+    private $currentUser;
+    private $db;
+    private $userId;
 
+    /**
+     * The initialize method is optional and will always be called before the
+     * target method/action. This is a convienient method where you could
+     * setup internal properties that are commonly used by several methods.
+     *
+     * @return void
+     */
+    public function initialize() : void
+    {
+        // Get the current user from session
+        $session = $this->di->get("session");
+        // var_dump($session);
+        $this->currentUser = $session->get("username");
 
-
-    // /**
-    //  * The initialize method is optional and will always be called before the
-    //  * target method/action. This is a convienient method where you could
-    //  * setup internal properties that are commonly used by several methods.
-    //  *
-    //  * @return void
-    //  */
-    // public function initialize() : void
-    // {
-    //     ;
-    // }
+        // Connect the database
+        $this->db = $this->di->get("db");
+        $this->db->connect();
+        if ($this->currentUser !=null) {
+            $sql = "SELECT id from users where username = ?;";
+            $res = $this->db->executeFetchAll($sql, [$this->currentUser]);
+            $this->userId = $res[0]->id;
+        }
+    }
 
 
 
@@ -56,34 +67,39 @@ class UserController implements ContainerInjectableInterface
         $page = $this->di->get("page");
 
         $title = "User Profile";
-        $session = $this->di->get("session");
-        // var_dump($_SESSION);
-        $currentUser = $session->get("username");
-        if ($currentUser) {
+        // var_dump($this->currentUser);
+        if ($this->currentUser) {
             $user = new User();
             $user->setDb($this->di->get("dbqb"));
-            $res = $user->find("username", $currentUser);
-            // var_dump($res);
+            $res = $user->find("username", $this->currentUser);
             $avatar = get_gravatar($res->email);
-            $reputation = $res->points;
-
             //Get Posts
             $user_id = $res->id;
+            $sql = "SELECT * from v_all WHERE user_id=?;";
+            $posts =  $this->db->executeFetchAll($sql, [$user_id]);
+            // var_dump($posts);
+            //Get the answers for the user
+            $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=1;";
+            $answers = $this->db->executeFetchAll($sql, [$user_id]);
+            $bonus = 0;
+            foreach ($answers as $value) {
+                if ($value->accepted==1) {
+                    $bonus += 1;
+                }
+            }
 
-            $post = new Post();
-            $post->setDb($this->di->get("dbqb"));
-            $posts = $post->findAllWhere("user_id = ?", $user_id);
-            //Get Answers
-            $db = $this->di->get("db");
-            $db->connect();
-            $sql = "SELECT * from v_posts_comments WHERE user_id=?;";
-            $comments = $db->executeFetchAll($sql, [$user_id]);
+            // Get the comments for the user
+            $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=0;";
+            $comments = $this->db->executeFetchAll($sql, [$user_id]);
             // var_dump($comments);
-            $page->add("user/profile",
-                ["current_user" => $currentUser,
+            $reputation = count($posts)*3 + (count($answers)- $bonus)*3 +
+            + $bonus*100 + count($comments);
+            $page->add("user/index",
+                ["current_user" => $this->currentUser,
                 "avatar" => $avatar,
                 "reputation" => $reputation,
-                "items"  => $posts,
+                "posts"  => $posts,
+                "answers" => $answers,
                 "comments" => $comments,
                 ]);
             return $page->render(["title" => $title, ]);
@@ -93,6 +109,47 @@ class UserController implements ContainerInjectableInterface
     }
 
 
+    public function showActionGet(int $user_id) : object
+    {
+        $page = $this->di->get("page");
+
+        $title = "User Profile";
+
+        $user = new User();
+        $user->setDb($this->di->get("dbqb"));
+        $res = $user->find("id", $user_id);
+        $avatar = get_gravatar($res->email);
+        //Get Posts
+
+        $sql = "SELECT * from v_all WHERE user_id=?;";
+        $posts =  $this->db->executeFetchAll($sql, [$user_id]);
+        // var_dump($res->email);
+        //Get the answers for the user
+        $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=1;";
+        $answers = $this->db->executeFetchAll($sql, [$user_id]);
+        $bonus = 0;
+        foreach ($answers as $value) {
+            if ($value->accepted==1) {
+                $bonus += 1;
+            }
+        }
+
+        // Get the comments for the user
+        $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=0;";
+        $comments = $this->db->executeFetchAll($sql, [$user_id]);
+        // var_dump($comments);
+        $reputation = count($posts)*3 + (count($answers)- $bonus)*3 +
+        + $bonus*100 + count($comments);
+        $page->add("user/profile",
+            ["user" => $res->username,
+            "avatar" => $avatar,
+            "reputation" => $reputation,
+            "posts"  => $posts,
+            "answers" => $answers,
+            "comments" => $comments,
+            ]);
+        return $page->render(["title" => $title, ]);
+    }
 
     /**
      * Description.

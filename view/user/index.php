@@ -1,20 +1,15 @@
 <?php
 
 namespace Anax\View;
-
 use Michelf\Markdown;
 
-// $acceptAns = "NoShowAcceptButton";
+$acceptAns = "NoShowAcceptButton";
 ?>
 
-<div class=userprofile>
-<div class=leftbar>
+<h2 class="page-title">You are logged in as "<?=$current_user ?>".  <a href="user/logout/"> Logout</a></h2>
 <img src="<?= $avatar?>" alt="" />
+<p class="center">Reputation: <?=$reputation?></p>
 
-</div>
-<div class=rightbar>Reputation:<p class=allposts><?=$reputation?> </p></div>
-<div class=rightbar>User:<p class=allposts><?=$user?></p></div>
-</div>
 <h2 class="title">Posts</h2>
 <?php if (!$posts) : ?>
     <p>There are no items to show.</p>
@@ -30,8 +25,7 @@ endif;
         $score = 0;
     } else {
         $score = $score[0]-> postscore;
-    };
-    $urlToShowPost = url("post/show/$item->id");?>
+    }?>
 
     <div class=posts>
         <div class=leftpost>
@@ -41,7 +35,7 @@ endif;
             <div class=countvotes>answers</div>
         </div>
         <div class=rightpost>
-            <div><b><a href="<?=$urlToShowPost ?>"><?= $item->title ?></a></b></div>
+            <div><b><a href="post/show/<?= $item->id ?>"><?= $item->title ?></a></b></div>
             <div><p class=postcontent><?= Markdown::defaultTransform($item->content) ?></p></div>
             <div>
                 <?php foreach (explode(",", $item->tags) as $tag) : ?>
@@ -62,19 +56,23 @@ endif;
     endif;
 ?>
 
+<table class=table>
     <?php foreach ($answers as $answer):
         if ($answer->accepted==1) {
             $acceptAns ="accepted";
         } else {
             $acceptAns ="NoShowAcceptButton";
         };
-        // var_dump($acceptAns);
     ?>
-        <div class=profileposts>
-                <a href="<?= url("post/show/{$answer->post_id}"); ?>"><?= Markdown::defaultTransform($answer->comment);?></a>
+        <tr>
+            <td>
+                <a href="<?= url("post/show/{$answer->post_id}"); ?>"><?=Markdown::defaultTransform($answer->comment) ?></a>
                 <div class=<?=$acceptAns?>><i class="fa-2x fas fa-check"></i></div>
-        </div>
+            </td>
+        </tr>
     <?php endforeach; ?>
+</table>
+
 
 <h2 class="title">Comments</h2>
 <?php if (!$comments) : ?>
@@ -83,8 +81,13 @@ endif;
         return;
     endif;
 ?>
+
+<table class=table>
     <?php foreach ($comments as $comment): ?>
-        <div>
+        <tr>
+            <td>
                 <a href="<?= url("post/show/{$comment->post_id}"); ?>"><?=Markdown::defaultTransform($comment->comment) ?></a>
-        </div>
+            </td>
+        </tr>
     <?php endforeach; ?>
+</table>

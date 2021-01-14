@@ -2,6 +2,8 @@
 
 namespace Anax\View;
 
+use Michelf\Markdown;
+
 // Create urls for navigation
 $urlToCreate = url("post/create");
 $totalPosts = count($posts);
@@ -36,7 +38,7 @@ endif;
         </div>
         <div class=rightpost>
             <div><b><a href="post/show/<?= $item->id ?>"><?= $item->title ?></a></b></div>
-            <div><p class=postcontent><?= $item->content ?></p></div>
+            <div><p class=postcontent><?= Markdown::defaultTransform($item->content) ?></p></div>
             <div>
                 <?php foreach (explode(",", $item->tags) as $tag) : ?>
                 <a class=onetag href="tag/<?= $tag ?>"><?= $tag ?></a>

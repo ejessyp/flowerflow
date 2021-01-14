@@ -4,10 +4,6 @@ namespace Pan\Post;
 
 use Anax\Commons\ContainerInjectableInterface;
 use Anax\Commons\ContainerInjectableTrait;
-use Pan\Post\HTMLForm\CreateForm;
-use Pan\Post\HTMLForm\EditForm;
-use Pan\Post\HTMLForm\DeleteForm;
-use Pan\Post\HTMLForm\UpdateForm;
 
 // use Anax\Route\Exception\ForbiddenException;
 // use Anax\Route\Exception\NotFoundException;
@@ -132,50 +128,6 @@ class PostController implements ContainerInjectableInterface
     }
 
     /**
-     * Handler with form to delete an item.
-     *
-     * @return object as a response object
-     */
-    public function deleteAction() : object
-    {
-        $page = $this->di->get("page");
-        $form = new DeleteForm($this->di);
-        $form->check();
-
-        $page->add("post/delete", [
-            "form" => $form->getHTML(),
-        ]);
-
-        return $page->render([
-            "title" => "Delete an item",
-        ]);
-    }
-
-
-
-    /**
-     * Handler with form to update an item.
-     *
-     * @param int $id the id to update.
-     *
-     * @return object as a response object
-     */
-    public function updateAction(int $id) : object
-    {
-        $page = $this->di->get("page");
-        $form = new UpdateForm($this->di, $id);
-        $form->check();
-
-        $page->add("post/update", [
-            "form" => $form->getHTML(),
-        ]);
-
-        return $page->render([
-            "title" => "Update an item",
-        ]);
-    }
-
-    /**
      * Handler with form to update an item.
      *
      * @param int $id the id to answer.
@@ -238,16 +190,16 @@ class PostController implements ContainerInjectableInterface
         }
         // check if the current user is the owner of the question, if yes, show the accepted answer button otherwise not
         // var_dump($this->currentUser,$posts[0]->username  );
-        $status=null;
+        $isOwner=true;
         if ($this->currentUser != $posts[0]->username ) {
-            $status = "NoShowAcceptButton";
+            $isOwner = false;
         }
         $page->add("post/show",
             ["post"  => $posts[0],
              "postscore"  => $postscore,
             "answers"  => $answers,
             "comments0"  => $comments0,
-            "status"  => $status,
+            "isOwner"  => $isOwner,
             ]);
 
         return $page->render([

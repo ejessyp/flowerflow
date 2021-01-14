@@ -2,6 +2,8 @@
 
 namespace Anax\View;
 
+use Michelf\Markdown;
+
 // Gather incoming variables and use default values if not set
 $post = isset($post) ? $post : null;
 $urlToUppVote = url("post/uppvote/$post->id");
@@ -20,7 +22,7 @@ $urlToAnswer = url("post/answer");
         <div class=arrow><a href='<?= $urlToDownVote?>'><i class="fa-2x fas fa-caret-down"></i></a></div>
     </div>
     <div class=rightpost>
-        <div><?= $post->content ?></div>
+        <div><?= Markdown::defaultTransform($post->content) ?></div>
         <div>
             <?php foreach (explode(",", $post->tags) as $tag) :
                 $urlToShowTag = url("tags/show/$tag");?>
@@ -30,7 +32,7 @@ $urlToAnswer = url("post/answer");
         <?php foreach ($comments0 as $comment) :?>
         <div class=comments>
 
-                <div><?= $comment->comment ?></div>
+                <div><?= Markdown::defaultTransform($comment->comment) ?></div>
                 <div><b>Commented:</b> <?= $comment->created ?> <b>By:</b><?= $comment->username ?></div>
 
         </div>
@@ -71,14 +73,18 @@ echo "</script>";
     $commentscore= $db->executeFetchAll($sql, [$answer->id]);
     // Set the accepted button according the status of answer and owner
     // var_dump($status, $answer->accepted);
-    if ($status===null) {
+    if ($isOwner) {
         if ($answer->accepted==0) {
             $acceptAns="check";
         } elseif ($answer->accepted==1) {
             $acceptAns="accepted";
         }
     } else {
-        $acceptAns = $status;
+        if ($answer->accepted==1) {
+            $acceptAns="accepted";
+        } elseif ($answer->accepted==0) {
+            $acceptAns="NoShowAcceptButton";
+        }
     }
     if (!$commentscore) {
         $commentscore = 0;
@@ -95,12 +101,12 @@ echo "</script>";
         <div class=<?=$acceptAns?>><a href='<?= $urlToAccept?>'><i class="fa-2x fas fa-check"></i></a></div>
     </div>
     <div class=rightpost>
-        <div><?= $answer->comment ?></div>
+        <div><?= Markdown::defaultTransform($answer->comment) ?></div>
         <div><b>Answered</b>: <?= $answer->created ?> <b>By:</b><?= $answer->username ?></div>
         <?php foreach ($replys as $reply) :?>
         <div class=comments>
 
-                <div><?= $reply->comment ?></div>
+                <div><?= Markdown::defaultTransform($reply->comment) ?></div>
                 <div><b>Commented:</b> <?= $reply->created ?> <b>By:</b><?= $reply->username ?></div>
 
         </div>

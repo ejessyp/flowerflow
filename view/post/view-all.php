@@ -2,12 +2,7 @@
 
 namespace Anax\View;
 
-/**
- * View to display all books.
- */
-// Show all incoming variables/functions
-//var_dump(get_defined_functions());
-//echo showEnvironment(get_defined_vars());
+use Michelf\Markdown;
 
 // Gather incoming variables and use default values if not set
 $items = isset($items) ? $items : null;
@@ -58,7 +53,7 @@ endif;
         </div>
         <div class=rightpost>
             <div><b><a href="post/show/<?= $item->id ?>"><?= $item->title ?></a></b></div>
-            <div><p class=postcontent><?= $item->content ?></p></div>
+            <div><p class=postcontent><?= Markdown::defaultTransform($item->content) ?></p></div>
             <div>
                 <?php foreach (explode(",", $item->tags) as $tag) : ?>
                 <a class=onetag href="tag/<?= $tag ?>"><?= $tag ?></a>
