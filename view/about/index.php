@@ -8,7 +8,7 @@ The goal of this project is to create a stackoverflow copy.
 
 <p>Here is the link to the course
 <a href =https://dbwebb.se/kurser/ramverk1-v2>link to the course in dbwebb.se</a>
-and here is the <a href =https://github.com/ejessyp/ramverk1> link to the Github Repo</a>
+and here is the <a href =https://github.com/ejessyp/flowerflow> link to the Github Repo</a>
 </p>
 
 <h1>About the developer</h1>

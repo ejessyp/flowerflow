@@ -42,15 +42,17 @@ class PostController implements ContainerInjectableInterface
     {
         // Get the current user from session
         $session = $this->di->get("session");
-        // var_dump($_SESSION);
+        // var_dump($session);
         $this->currentUser = $session->get("username");
 
         // Connect the database
         $this->db = $this->di->get("db");
         $this->db->connect();
-        $sql = "SELECT id from users where username = ?;";
-        $res = $this->db->executeFetchAll($sql, [$this->currentUser]);
-        $this->userId = $res[0]->id;
+        if ($this->currentUser !=null) {
+            $sql = "SELECT id from users where username = ?;";
+            $res = $this->db->executeFetchAll($sql, [$this->currentUser]);
+            $this->userId = $res[0]->id;
+        }
     }
 
 
@@ -185,14 +187,20 @@ class PostController implements ContainerInjectableInterface
         $page = $this->di->get("page");
         $request = $this->di->get("request");
         $submit = $request->getPost("submit") ?: null;
-        if ($submit) {
-            $post_id = $request->getPost("post_id") ?: null;
-            $comment = $request->getPost("answer") ?: null;
+        // one has to login to answer the question
+        if ($this->currentUser) {
+            if ($submit) {
+                $post_id = $request->getPost("post_id") ?: null;
+                $comment = $request->getPost("answer") ?: null;
 
-            $sql = "INSERT INTO comments (comment, user_id, post_id, answer) VALUES (?, ?, ?, ?);";
-            $this->db->execute($sql, [$comment, $this->userId, $post_id, 1]);
+                $sql = "INSERT INTO comments (comment, user_id, post_id, answer) VALUES (?, ?, ?, ?);";
+                $this->db->execute($sql, [$comment, $this->userId, $post_id, 1]);
+                $response = $this->di->get("response");
+                return $response->redirect("post/show/$post_id");
+            }
+        } else {
             $response = $this->di->get("response");
-            return $response->redirect("post/show/$post_id");
+            return $response->redirect("user/login");
         }
     }
 
@@ -207,10 +215,13 @@ class PostController implements ContainerInjectableInterface
     {
         $page = $this->di->get("page");
         $postid = $id;
+        $request = $this->di->get("request");
+        $orderBy = $request->getGet("orderby") ?: "created";
+        $order = $request->getGet("order") ?: "asc";
         $sql = "SELECT * from v_all_user WHERE id=?;";
         $posts = $this->db->executeFetchAll($sql, [$postid]);
 
-        $sql = "SELECT * from v_comments_user WHERE post_id=? and answer=1;";
+        $sql = "SELECT * from v_comments_user WHERE post_id=? and answer=1 order by accepted desc, $orderBy $order;";
         //Get the answers for the post
         $answers = $this->db->executeFetchAll($sql, [$postid]);
         $sql = "SELECT * from v_comments_user WHERE post_id=? and answer=0 and ISNULL(comment_reply_id);";
@@ -225,12 +236,18 @@ class PostController implements ContainerInjectableInterface
         } else {
             $postscore = $postscore[0]-> postscore;
         }
-
+        // check if the current user is the owner of the question, if yes, show the accepted answer button otherwise not
+        // var_dump($this->currentUser,$posts[0]->username  );
+        $status=null;
+        if ($this->currentUser != $posts[0]->username ) {
+            $status = "NoShowAcceptButton";
+        }
         $page->add("post/show",
             ["post"  => $posts[0],
              "postscore"  => $postscore,
             "answers"  => $answers,
             "comments0"  => $comments0,
+            "status"  => $status,
             ]);
 
         return $page->render([

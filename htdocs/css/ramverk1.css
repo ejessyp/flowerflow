@@ -6864,6 +6864,9 @@ a.rm-button.rm-clicked .rm-button-face-2 {
 }
 .rightpost a {
   color: #000;
+}
+.rightpost a:hover {
+  color: green;
   text-decoration: none;
 }
 .leftbar {
@@ -6979,4 +6982,13 @@ body {
 }
 .middle {
   text-align: center;
+}
+.check a {
+  color: grey;
+}
+.accepted a {
+  color: green;
+}
+.NoShowAcceptButton {
+  display: none;
 }

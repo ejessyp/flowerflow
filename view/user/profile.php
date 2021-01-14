@@ -13,15 +13,11 @@ namespace Anax\View;
 $items = isset($items) ? $items : null;
 
 ?>
-<navbar class="navbar">
-    <a href="user/edit/<?=$current_user?>">Edit Profile</a>
-    <a href="user/logout/">Logout</a>
-</navbar>
 
 <h2 class="page-title">You are logged in as "<?=$current_user ?>".</h2>
 <img src="<?= $avatar?>" alt="" />
 <p class="center">Reputation: <?=$reputation?></p>
-
+<a href="user/logout/">Logout</a>
 <h2 class="title">Posts</h2>
 <?php if (!$items) : ?>
         <p>There are no posts.</p>

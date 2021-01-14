@@ -1,3 +1,4 @@
 id,username,firstname,lastname,password,email,type
 ,doe,doe,ericsson,$2y$10$AlcZ3tBgPpN6ANIVb9S7JOyCgp8JCz0hqP7nxg.zNvC5ML2bqly9O,doe@123.com,user
 ,admin,admin,petersson,$2y$10$AlcZ3tBgPpN6ANIVb9S7JOyCgp8JCz0hqP7nxg.zNvC5ML2bqly9O,admin@gmail.com,admin
+,guest,guest,andersson,$2y$10$AlcZ3tBgPpN6ANIVb9S7JOyCgp8JCz0hqP7nxg.zNvC5ML2bqly9O,guest@gmail.com,user

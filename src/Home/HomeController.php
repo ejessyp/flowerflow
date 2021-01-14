@@ -36,11 +36,6 @@ class HomeController implements ContainerInjectableInterface
     //  */
     public function initialize() : void
     {
-        // Get the current user from session
-        $session = $this->di->get("session");
-        // var_dump($_SESSION);
-        $this->currentUser = $session->get("username");
-
         // Connect the database
         $this->db = $this->di->get("db");
         $this->db->connect();

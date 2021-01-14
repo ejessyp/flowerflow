@@ -44,6 +44,11 @@ include("addcomment.js");
 echo "</script>";
 ?>
 <div><a href="javascript:void(0)" onclick="add()"'>Add a comment</a></div>
+<div class=rightbar>
+<ul class="sortby">
+<li><a href='?orderby=created&order=desc'>Date:<i class="fas fa-arrow-alt-circle-down"></i></a><a href='?orderby=created&order=asc'><i class="fas fa-arrow-alt-circle-up"></i></a></li>
+</ul>
+</div>
 <div id="comments" class=hide>
  <div>
  <form method=post action="<?= $urlToComment?>">
@@ -57,24 +62,37 @@ echo "</script>";
     $urlToCommentUppVote = url("comment/uppvote/$answer->id/$post->id");
     $urlToCommentDownVote = url("comment/downvote/$answer->id/$post->id");
     $urlToReply = url("comment/reply/$answer->id/$post->id");
+    $urlToAccept = url("comment/accept/$answer->id/$post->id");
     // get the score for each answer
     $db =  $this->di->get("db");
     $sql = "select * from v_comments_user where comment_reply_id=?;";
     $replys= $db->executeFetchAll($sql, [$answer->id]);
     $sql = "select * from v_comment_votes where comment_id=?;";
     $commentscore= $db->executeFetchAll($sql, [$answer->id]);
-
+    // Set the accepted button according the status of answer and owner
+    // var_dump($status, $answer->accepted);
+    if ($status===null) {
+        if ($answer->accepted==0) {
+            $acceptAns="check";
+        } elseif ($answer->accepted==1) {
+            $acceptAns="accepted";
+        }
+    } else {
+        $acceptAns = $status;
+    }
     if (!$commentscore) {
         $commentscore = 0;
     } else {
         $commentscore = $commentscore[0]-> commentscore;
     }
-    $urlToComment =url("comment/$answer->id");?>
+    $urlToComment =url("comment/$answer->id");
+    // var_dump($acceptAns);?>
 <div class=posts>
     <div class=leftpost>
         <div class=arrow><a href='<?= $urlToCommentUppVote?>'><i class="fa-2x fas fa-caret-up"></i></i></a></div>
         <div class=countvotes><?= $commentscore?></div>
         <div class=arrow><a href='<?= $urlToCommentDownVote?>'><i class="fa-2x fas fa-caret-down"></i></a></div>
+        <div class=<?=$acceptAns?>><a href='<?= $urlToAccept?>'><i class="fa-2x fas fa-check"></i></a></div>
     </div>
     <div class=rightpost>
         <div><?= $answer->comment ?></div>

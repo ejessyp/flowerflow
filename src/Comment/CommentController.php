@@ -44,9 +44,11 @@ class CommentController implements ContainerInjectableInterface
         // Connect the database
         $this->db = $this->di->get("db");
         $this->db->connect();
-        $sql = "SELECT id from users where username = ?;";
-        $res = $this->db->executeFetchAll($sql, [$this->currentUser]);
-        $this->userId = $res[0]->id;
+        if ($this->currentUser !=null) {
+            $sql = "SELECT id from users where username = ?;";
+            $res = $this->db->executeFetchAll($sql, [$this->currentUser]);
+            $this->userId = $res[0]->id;
+        }
     }
 
 
@@ -95,6 +97,30 @@ class CommentController implements ContainerInjectableInterface
         $sql = "INSERT INTO comment_votes (score, comment_id, user_id) VALUES (?, ?, ?);";
         $this->db->execute($sql, [-1, $id, $this->userId]);
 
+        $response = $this->di->get("response");
+        return $response->redirect("post/show/$post_id");
+    }
+
+    /**
+     * Handler to change the status of answer accepted or unaccepted
+     *
+     * @return object as a response object
+     */
+    public function acceptAction(int $id, int $post_id) : object
+    {
+        $page = $this->di->get("page");
+        //get the status of this answer
+        $sql = "select accepted from comments where post_id=? and id=?;";
+        $res = $this->db->executeFetchAll($sql, [$post_id, $id]);
+
+        if ($res[0]->accepted==0) {
+            $accepted =1;
+        } elseif ($res[0]->accepted==1) {
+            $accepted=0;
+        }
+        //change the status of this answer
+        $sql = "update comments set accepted=? where post_id=? and id=?;";
+        $this->db->execute($sql, [$accepted, $post_id, $id]);
         $response = $this->di->get("response");
         return $response->redirect("post/show/$post_id");
     }
