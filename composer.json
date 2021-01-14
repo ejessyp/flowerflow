@@ -2,6 +2,12 @@
     "name" : "bthpan/flowerflow",
     "description": "Flowerflow project for ramverk1 in BTH.",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Qing Pan",
+            "role": "Developer"
+        }
+    ],
     "minimum-stability": "beta",
     "prefer-stable": true,
     "autoload": {
