@@ -1,6 +1,6 @@
 {
-    "name" : "anax/noname",
-    "description": "A me page for the ramverk1 course.",
+    "name" : "bthpan/FlowerFlow",
+    "description": "FlowerFlow project for ramverk1 in BTH.",
     "license": "MIT",
     "minimum-stability": "beta",
     "prefer-stable": true,
