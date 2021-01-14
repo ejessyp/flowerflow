@@ -1,5 +1,5 @@
 [![Latest Stable Version](https://poser.pugx.org/bthpan/weather/v)](//packagist.org/packages/bthpan/weather)
-[![Build Status](https://travis-ci.com/ejessyp/weather.svg?branch=main)](https://travis-ci.com/ejessyp/weather)
+[![Build Status](https://https://travis-ci.com/github/ejessyp/flowerflow.svg?branch=main)](https://travis-ci.com/ejessyp/flowerflow)
 [![CircleCI](https://circleci.com/gh/canax/remserver.svg?style=shield)](https://circleci.com/gh/ejessyp/weather)
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ejessyp/weather/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/ejessyp/weather/?branch=main)
@@ -19,7 +19,7 @@ There are two steps in the installation procedure, 1) first install the module u
 Install the module using composer.
 
 ```
-composer require bthpan/weather
+composer require bthpan/flowerflow
 ```
 
 ### Step 2, integrate into your Anax base
