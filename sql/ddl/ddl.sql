@@ -196,118 +196,82 @@ SET answer = b'1',
     created = CURRENT_TIMESTAMP
 ;
 
+
 --
--- -- Insert into post_votes
+-- Create a temporary view for all posts and then join with post2tag
+--
+-- DROP view if exists v_posts_comments;
+-- CREATE VIEW v_posts_comments
+-- AS
+-- SELECT
+--     p.*, sum(c.answer) as answer
+-- FROM posts AS p
+--     LEFT JOIN comments AS c
+--         ON p.id = c.post_id
+-- group by id;
+-- DELIMITER ;
+--
+--
 -- --
--- DELETE FROM post_votes;
--- LOAD DATA LOCAL INFILE 'post_votes.csv'
--- INTO TABLE post_votes
--- CHARSET utf8
--- FIELDS
---     TERMINATED BY ','
---     ENCLOSED BY '"'
--- LINES
---     TERMINATED BY '\n'
--- IGNORE 1 LINES
--- ;
-
-DROP view if exists v_posts_comments_tags;
-CREATE VIEW v_posts_comments_tags
-AS
-SELECT
-    p.id as postid, p.title, p.content, p.created as postcreated, p.deleted as postdeleted, c.*, group_concat(pt.tag_name) as tags
-FROM posts AS p
-    JOIN comments AS c
-        ON p.id = c.post_id
-    JOIN post2tag AS pt
-        ON c.post_id = pt.post_id
-group by id
-;
-DELIMITER ;
-
+-- -- Create a temporary view for all posts and then join with post2tag
+-- --
+-- DROP view if exists v_posts_comments_pv;
+-- CREATE VIEW v_posts_comments_pv
+-- AS
+-- SELECT
+--     vpc.*, sum(pv.score) as votes
+-- FROM v_posts_comments AS vpc
+--     LEFT JOIN post_votes AS pv
+--         ON vpc.id = pv.post_id
+-- group by id;
+-- DELIMITER ;
+-- --
+-- -- Create a view for all posts
+-- --
+-- DROP view if exists v_all;
+-- CREATE VIEW v_all
+-- AS
+-- SELECT
+--     v.*, group_concat(tag_name) as tags
+-- FROM v_posts_comments_pv AS v
+--     JOIN post2tag AS pt
+--         ON v.id = pt.post_id
+-- group by id;
+-- DELIMITER ;
 --
--- Create a temporary view for all posts and then join with post2tag
+-- --
+-- -- Create a view for all posts
+-- --
+-- DROP view if exists v_all_user;
+-- CREATE VIEW v_all_user
+-- AS
+-- SELECT
+--     v.*, u.username
+-- FROM v_all AS v
+--     JOIN users AS u
+--         ON u.id = v.user_id;
+-- DELIMITER ;
 --
-DROP view if exists v_posts_comments;
-CREATE VIEW v_posts_comments
-AS
-SELECT
-    p.*, sum(c.answer) as answer
-FROM posts AS p
-    LEFT JOIN comments AS c
-        ON p.id = c.post_id
-group by id;
-DELIMITER ;
-
+-- --
+-- -- Create a view for comments for one question
+-- --
+-- DROP view if exists v_comments_user;
+-- CREATE VIEW v_comments_user
+-- AS
+-- SELECT
+--     p.user_id as post_userid, c.*, u.username
+-- FROM posts AS p
+--     RIGHT JOIN comments AS c
+--         ON p.id = c.post_id
+--     JOIN users AS u
+--         ON u.id = c.user_id;
+-- DELIMITER ;
 --
--- Create a temporary view for all posts and then join with post2tag
---
-DROP view if exists v_posts_comments_pv;
-CREATE VIEW v_posts_comments_pv
-AS
-SELECT
-    vpc.*, sum(pv.score) as votes
-FROM v_posts_comments AS vpc
-    LEFT JOIN post_votes AS pv
-        ON vpc.id = pv.post_id
-group by id;
-DELIMITER ;
---
--- Create a view for all posts
---
-DROP view if exists v_all;
-CREATE VIEW v_all
-AS
-SELECT
-    v.*, group_concat(tag_name) as tags
-FROM v_posts_comments_pv AS v
-    JOIN post2tag AS pt
-        ON v.id = pt.post_id
-group by id;
-DELIMITER ;
-
---
--- Create a view for all posts
---
-DROP view if exists v_all_user;
-CREATE VIEW v_all_user
-AS
-SELECT
-    v.*, u.username
-FROM v_all AS v
-    JOIN users AS u
-        ON u.id = v.user_id;
-DELIMITER ;
-
---
--- Create a view for comments for one question
---
-DROP view if exists v_comments_user;
-CREATE VIEW v_comments_user
-AS
-SELECT
-    p.user_id as post_userid, c.*, u.username
-FROM posts AS p
-    RIGHT JOIN comments AS c
-        ON p.id = c.post_id
-    JOIN users AS u
-        ON u.id = c.user_id;
-DELIMITER ;
-
---
--- Create a view for post votes
---
-DROP view if exists v_post_votes;
-CREATE VIEW v_post_votes
-AS
-SELECT post_id, sum(score) as postscore from post_votes group by post_id;
-DELIMITER ;
-
---
--- Create a view for comment votes
---
-DROP view if exists v_comment_votes;
-CREATE VIEW v_comment_votes
-AS
-SELECT comment_id, sum(score) as commentscore from comment_votes group by comment_id;
-DELIMITER ;
+-- --
+-- -- Create a view for comment votes
+-- --
+-- DROP view if exists v_comment_votes;
+-- CREATE VIEW v_comment_votes
+-- AS
+-- SELECT comment_id, sum(score) as commentscore from comment_votes group by comment_id;
+-- DELIMITER ;

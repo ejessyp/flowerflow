@@ -20,33 +20,28 @@ $totalPosts = count($posts);
 endif;
 ?>
 <?php foreach ($posts as $item) :
+    $sql = "select * from v_post_votes where post_id=?;";
     $db =  $this->di->get("db");
-    $sql = "SELECT sum(score) as postscore from post_votes where post_id=?;";
     $score = $db->executeFetchAll($sql, [$item->id]);
-    $sql = "select * from post2tag where post_id=?;";
-    $posttags = $db->executeFetchAll($sql, [$item->id]);
-    $sql = "SELECT sum(answer) as totalanswer from comments where post_id=?;";
-    $answer = $db->executeFetchAll($sql, [$item->id]);
-    // var_dump($answer);
-    // if (!$score) {
-    //     $score = 0;
-    // } else {
-    //     $score = $score[0]-> postscore;
-    // }?>
+    if (!$score) {
+        $score = 0;
+    } else {
+        $score = $score[0]-> postscore;
+    }?>
 
     <div class=posts>
         <div class=leftpost>
-            <div class=countvotes><?= $score[0]->postscore?: 0 ?></div>
+            <div class=countvotes><?= $score?></div>
             <div class=countvotes>votes</div>
-            <div class=countanswers><?= $answer[0]->totalanswer?: 0?></div>
+            <div class=countanswers><?= $item->answer?: 0?></div>
             <div class=countvotes>answers</div>
         </div>
         <div class=rightpost>
             <div><b><a href="post/show/<?= $item->id ?>"><?= $item->title ?></a></b></div>
             <div><p class=postcontent><?= Markdown::defaultTransform($item->content) ?></p></div>
             <div>
-                <?php foreach ($posttags as $tag) : ?>
-                <a class=onetag href="tag/<?= $tag->tag_name ?>"><?= $tag->tag_name ?></a>
+                <?php foreach (explode(",", $item->tags) as $tag) : ?>
+                <a class=onetag href="tag/<?= $tag ?>"><?= $tag ?></a>
 
             <?php endforeach; ?>
             </div>

@@ -84,9 +84,9 @@ class TagController implements ContainerInjectableInterface
     public function showAction(string $tagname) : object
     {
         $page = $this->di->get("page");
-        $sql = "Select * from posts where id IN (SELECT post_id from post2tag WHERE tag_name=?);;";
+        $sql = "SELECT * from v_all WHERE find_in_set(?, tags);";
         $posts = $this->db->executeFetchAll($sql, [$tagname]);
-
+        var_dump($posts);
         $page->add("tag/show",
             ["tagName" => $tagname,
             "items"  => $posts,

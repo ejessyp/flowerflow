@@ -4,6 +4,7 @@ namespace Anax\View;
 
 use Michelf\Markdown;
 
+$db =  $this->di->get("db");
 // Gather incoming variables and use default values if not set
 $post = isset($post) ? $post : null;
 $urlToUppVote = url("post/uppvote/$post->id");
@@ -13,7 +14,7 @@ $urlToAnswer = url("post/answer");
 ?>
 
 <div><h1><?= $post->title?></h1></div>
-<div><b>Asked</b> <?= $post->created ?> <b> By: </b><?= $post->username ?></div>
+<div><b>Asked</b> <?= $post->created ?> <b> By: </b><?= $post_owner ?></div>
 <div class=posts>
 
     <div class=leftpost>
@@ -24,16 +25,21 @@ $urlToAnswer = url("post/answer");
     <div class=rightpost>
         <div><?= Markdown::defaultTransform($post->content) ?></div>
         <div>
-            <?php foreach (explode(",", $post->tags) as $tag) :
-                $urlToShowTag = url("tags/show/$tag");?>
-            <a class=onetag href="<?= $urlToShowTag ?>"><?= $tag ?></a>
+            <?php foreach ($posttags as $tag) :
+                $urlToShowTag = url("tags/show/$tag->tag_name");?>
+            <a class=onetag href="<?= $urlToShowTag ?>"><?= $tag->tag_name ?></a>
             <?php endforeach; ?>
         </div>
-        <?php foreach ($comments0 as $comment) :?>
+        <?php foreach ($comments0 as $comment) :
+            $sql = "SELECT user_id FROM comments WHERE id=?;";
+            $userId = $db->executeFetchAll($sql, [$comment->id]);
+            $sql = "SELECT username FROM users WHERE id=?;";
+            $username = $db->executeFetchAll($sql, [$userId[0]->user_id]);
+            // var_dump($username);?>
         <div class=comments>
 
                 <div><?= Markdown::defaultTransform($comment->comment) ?></div>
-                <div><b>Commented:</b> <?= $comment->created ?> <b>By:</b><?= $comment->username ?></div>
+                <div><b>Commented:</b> <?= $comment->created ?> <b>By:</b><?= $username[0]->username ?></div>
 
         </div>
         <?php endforeach; ?>
@@ -49,6 +55,7 @@ echo "</script>";
 <div class=rightbar>
 <ul class="sortby">
 <li><a href='?orderby=created&order=desc'>Date:<i class="fas fa-arrow-alt-circle-down"></i></a><a href='?orderby=created&order=asc'><i class="fas fa-arrow-alt-circle-up"></i></a></li>
+<li><a href='?orderby=votes&order=desc'>Votes:<i class="fas fa-arrow-alt-circle-down"></i></a><a href='?orderby=votes&order=asc'><i class="fas fa-arrow-alt-circle-up"></i></a></li>
 </ul>
 </div>
 <div id="comments" class=hide>
@@ -66,11 +73,16 @@ echo "</script>";
     $urlToReply = url("comment/reply/$answer->id/$post->id");
     $urlToAccept = url("comment/accept/$answer->id/$post->id");
     // get the score for each answer
-    $db =  $this->di->get("db");
-    $sql = "select * from v_comments_user where comment_reply_id=?;";
+
+    $sql = "SELECT username FROM users WHERE id=?;";
+    $username = $db->executeFetchAll($sql, [$answer->user_id]);
+
+    $sql = "SELECT sum(score) as commentscore from comment_votes where comment_id=?;";
+    $commentScore = $db->executeFetchAll($sql, [$answer->id]);
+
+    $sql = "select * from comments where comment_reply_id=?;";
     $replys= $db->executeFetchAll($sql, [$answer->id]);
-    $sql = "select * from v_comment_votes where comment_id=?;";
-    $commentscore= $db->executeFetchAll($sql, [$answer->id]);
+
     // Set the accepted button according the status of answer and owner
     // var_dump($status, $answer->accepted);
     if ($isOwner) {
@@ -86,28 +98,31 @@ echo "</script>";
             $acceptAns="NoShowAcceptButton";
         }
     }
-    if (!$commentscore) {
-        $commentscore = 0;
-    } else {
-        $commentscore = $commentscore[0]-> commentscore;
-    }
+    // if (!$commentscore) {
+    //     $commentscore = 0;
+    // } else {
+    //     $commentscore = $commentscore[0]-> commentscore;
+    // }
     $urlToComment =url("comment/$answer->id");
     // var_dump($acceptAns);?>
 <div class=posts>
     <div class=leftpost>
         <div class=arrow><a href='<?= $urlToCommentUppVote?>'><i class="fa-2x fas fa-caret-up"></i></i></a></div>
-        <div class=countvotes><?= $commentscore?></div>
+        <div class=countvotes><?= $commentScore[0]->commentscore?:0?></div>
         <div class=arrow><a href='<?= $urlToCommentDownVote?>'><i class="fa-2x fas fa-caret-down"></i></a></div>
         <div class=<?=$acceptAns?>><a href='<?= $urlToAccept?>'><i class="fa-2x fas fa-check"></i></a></div>
     </div>
     <div class=rightpost>
         <div><?= Markdown::defaultTransform($answer->comment) ?></div>
-        <div><b>Answered</b>: <?= $answer->created ?> <b>By:</b><?= $answer->username ?></div>
-        <?php foreach ($replys as $reply) :?>
+        <div><b>Answered</b>: <?= $answer->created ?> <b>By:</b><?= $username[0]->username?></div>
+        <?php foreach ($replys as $reply) :
+            $sql = "SELECT username FROM users WHERE id=?;";
+            $username = $db->executeFetchAll($sql, [$reply->user_id]);
+            ?>
         <div class=comments>
 
                 <div><?= Markdown::defaultTransform($reply->comment) ?></div>
-                <div><b>Commented:</b> <?= $reply->created ?> <b>By:</b><?= $reply->username ?></div>
+                <div><b>Commented:</b> <?= $reply->created ?> <b>By:</b><?= $username[0]->username ?></div>
 
         </div>
         <?php endforeach; ?>

@@ -75,21 +75,23 @@ class UserController implements ContainerInjectableInterface
             $avatar = get_gravatar($res->email);
             //Get Posts
             $user_id = $res->id;
-            $sql = "SELECT * from v_all WHERE user_id=?;";
-            $posts =  $this->db->executeFetchAll($sql, [$user_id]);
+            $sql = "SELECT * FROM posts WHERE user_id=?;";
+            $posts = $this->db->executeFetchAll($sql, [$user_id]);
+
             // var_dump($posts);
             //Get the answers for the user
-            $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=1;";
+            $sql = "SELECT * from comments WHERE user_id=? and answer=1;";
             $answers = $this->db->executeFetchAll($sql, [$user_id]);
             $bonus = 0;
             foreach ($answers as $value) {
+                // var_dump($value->accepted);
                 if ($value->accepted==1) {
                     $bonus += 1;
                 }
             }
 
             // Get the comments for the user
-            $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=0;";
+            $sql = "SELECT * from comments WHERE user_id=? and answer=0;";
             $comments = $this->db->executeFetchAll($sql, [$user_id]);
             // var_dump($comments);
             $reputation = count($posts)*3 + (count($answers)- $bonus)*3 +
@@ -98,7 +100,7 @@ class UserController implements ContainerInjectableInterface
                 ["current_user" => $this->currentUser,
                 "avatar" => $avatar,
                 "reputation" => $reputation,
-                "posts"  => $posts,
+                "items"  => $posts,
                 "answers" => $answers,
                 "comments" => $comments,
                 ]);
@@ -121,11 +123,11 @@ class UserController implements ContainerInjectableInterface
         $avatar = get_gravatar($res->email);
         //Get Posts
 
-        $sql = "SELECT * from v_all WHERE user_id=?;";
+        $sql = "SELECT * from posts WHERE user_id=?;";
         $posts =  $this->db->executeFetchAll($sql, [$user_id]);
         // var_dump($res->email);
         //Get the answers for the user
-        $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=1;";
+        $sql = "SELECT * from comments WHERE user_id=? and answer=1;";
         $answers = $this->db->executeFetchAll($sql, [$user_id]);
         $bonus = 0;
         foreach ($answers as $value) {
@@ -135,7 +137,7 @@ class UserController implements ContainerInjectableInterface
         }
 
         // Get the comments for the user
-        $sql = "SELECT * from v_comments_user WHERE user_id=? and answer=0;";
+        $sql = "SELECT * from comments WHERE user_id=? and answer=0;";
         $comments = $this->db->executeFetchAll($sql, [$user_id]);
         // var_dump($comments);
         $reputation = count($posts)*3 + (count($answers)- $bonus)*3 +

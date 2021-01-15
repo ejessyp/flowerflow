@@ -67,14 +67,8 @@ class PostController implements ContainerInjectableInterface
         $orderBy = $request->getGet("orderby") ?: "created";
         $order = $request->getGet("order") ?: "asc";
 
-        // $sql = "SELECT * FROM posts ORDER BY $orderBy $order;";
-        $sql = "SELECT p.*, sum(v.score) as votes
-            FROM posts AS p
-                LEFT JOIN post_votes AS v
-                ON p.id = v.post_id
-                group by id
-                order by $orderBy $order";
-        // var_dump($sql);
+        $sql = "SELECT * FROM v_all ORDER BY $orderBy $order;";
+
         $posts = $this->db->executeFetchAll($sql);
 
         $page->add("post/view-all", [
@@ -122,7 +116,7 @@ class PostController implements ContainerInjectableInterface
             $sql = "INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?);";
             $this->db->execute($sql, [$title, $content, $this->userId]);
             $lastInsertId = $this->db->lastInsertId();
-            // var_dump($lastInsertId);
+            var_dump($lastInsertId);
             $tagsArray = explode(",", $tags);
             foreach ($tagsArray as $value) {
                 $sql = "INSERT INTO post2tag (post_id, tag_name) VALUES (?, ?);";
@@ -176,46 +170,36 @@ class PostController implements ContainerInjectableInterface
         $request = $this->di->get("request");
         $orderBy = $request->getGet("orderby") ?: "created";
         $order = $request->getGet("order") ?: "asc";
-        // Get the post $id , votes and answers and tags and username
-        $sql = "SELECT * from posts where id=?;";
-
+        $sql = "SELECT * from posts WHERE id=?;";
         $posts = $this->db->executeFetchAll($sql, [$postid]);
-        $sql = "SELECT username FROM users WHERE id=?;";
-        $username = $this->db->executeFetchAll($sql, [$posts[0]->user_id]);
         $sql = "select * from post2tag where post_id=?;";
-        $posttags = $this->db->executeFetchAll($sql, [$postid]);
+        $posttags = $db->executeFetchAll($sql, [$item->id]);
         $sql = "SELECT sum(score) as postscore from post_votes where post_id=?;";
-        $postscore = $this->db->executeFetchAll($sql, [$postid]);
-        // Get the comments for the post
+        $score = $this->db->executeFetchAll($sql, [$item->id]);
+        $sql = "SELECT sum(answer) as totalanswer from comments where post_id=?;";
+        $answer = $this->db->executeFetchAll($sql, [$item->id]);
 
-        $sql = "SELECT * from comments WHERE post_id=? and answer=0 and ISNULL(comment_reply_id);";
-        $comments0 = $this->db->executeFetchAll($sql, [$postid]);
-        //Get the answers for the post $id
-        // $sql = "SELECT * from comments WHERE post_id=? and answer=1 order by accepted desc, $orderBy $order;";
-        $sql ="SELECT c.*, sum(v.score) votes
-                FROM comments AS c
-                    LEFT JOIN comment_votes AS v
-                    ON c.id = v.comment_id
-                WHERE post_id=? and answer=1
-                group by id
-                order by accepted desc, $orderBy $order";
+        $sql = "SELECT * from v_comments_user WHERE post_id=? and answer=1 order by accepted desc, $orderBy $order;";
+        //Get the answers for the post
         $answers = $this->db->executeFetchAll($sql, [$postid]);
-        // var_dump($sql);
-        // var_dump($answers);
+        $sql = "SELECT * from v_comments_user WHERE post_id=? and answer=0 and ISNULL(comment_reply_id);";
+        // Get the comments for the post
+        $comments0 = $this->db->executeFetchAll($sql, [$postid]);
+
+
         // check if the current user is the owner of the question, if yes, show the accepted answer button otherwise not
         // var_dump($this->currentUser,$posts[0]->username  );
         $isOwner=true;
-        if ($this->userId != $posts[0]->user_id ) {
+        if ($this->currentUser != $posts[0]->username ) {
             $isOwner = false;
         }
         $page->add("post/show",
             ["post"  => $posts[0],
-            "postscore"  => $postscore[0]->postscore?:0,
-            "posttags"  => $posttags,
+             "postscore"  => $postscore[0]->postscore?:0,
+             "totalanswer"  => $answer[0]->totalanswer?:0,
             "answers"  => $answers,
             "comments0"  => $comments0,
             "isOwner"  => $isOwner,
-            "post_owner"  => $username[0]->username,
             ]);
 
         return $page->render([
@@ -226,27 +210,24 @@ class PostController implements ContainerInjectableInterface
     public function uppvoteAction(int $id) : object
     {
         $page = $this->di->get("page");
-        if ($this->currentUser){
-            $sql = "INSERT INTO post_votes (score, post_id, user_id) VALUES (?, ?, ?);";
-            $this->db->execute($sql, [1, $id, $this->userId]);
-            $response = $this->di->get("response");
-            return $response->redirect("post/show/$id");
-        }
+
+        $sql = "INSERT INTO post_votes (score, post_id, user_id) VALUES (?, ?, ?);";
+        $this->db->execute($sql, [1, $id, $this->userId]);
+
+
         $response = $this->di->get("response");
-        return $response->redirect("user/login");
+        return $response->redirect("post/show/$id");
     }
 
     public function downvoteAction(int $id) : object
     {
         $page = $this->di->get("page");
-        if ($this->currentUser) {
-            $sql = "INSERT INTO post_votes (score, post_id, user_id) VALUES (?, ?, ?);";
-            $this->db->execute($sql, [-1, $id, $this->userId]);
 
-            $response = $this->di->get("response");
-            return $response->redirect("post/show/$id");
-        }
+        $sql = "INSERT INTO post_votes (score, post_id, user_id) VALUES (?, ?, ?);";
+        $this->db->execute($sql, [-1, $id, $this->userId]);
+
+
         $response = $this->di->get("response");
-        return $response->redirect("user/login");
+        return $response->redirect("post/show/$id");
     }
 }

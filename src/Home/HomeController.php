@@ -52,14 +52,15 @@ class HomeController implements ContainerInjectableInterface
     {
         $page = $this->di->get("page");
 
-        $sql = "SELECT * FROM v_all limit 4;";
+        $sql = "SELECT * FROM posts order by created desc;";
         $posts = $this->db->executeFetchAll($sql);
+
         $sql = "SELECT * FROM tags ORDER BY tagname asc limit 5;";
         $tags = $this->db->executeFetchAll($sql);
         //var_dump($tags);
         $sql = "SELECT * FROM users;";
-
         $users = $this->db->executeFetchAll($sql);
+
         $page->add("home/index", [
             "tags" => $tags,
             "posts" => $posts,
@@ -67,7 +68,7 @@ class HomeController implements ContainerInjectableInterface
         ]);
 
         return $page->render([
-            "title" => "All posts",
+            "title" => "The home page ",
         ]);
     }
 }

@@ -2,12 +2,7 @@
 
 namespace Anax\View;
 
-/**
- * View to display all books.
- */
-// Show all incoming variables/functions
-//var_dump(get_defined_functions());
-//echo showEnvironment(get_defined_vars());
+use Michelf\Markdown;
 
 // Gather incoming variables and use default values if not set
 $items = isset($items) ? $items : null;
@@ -21,24 +16,47 @@ $items = isset($items) ? $items : null;
     return;
 endif;
 ?>
+<div class=posts>
+<div class=leftbar>
+<p ><b><?=count($items); ?> Posts</b></p></div>
+<div class=rightbar>
+<ul class="sortby">
+<li><a href='?orderby=created&order=desc'>Date:<i class="fas fa-arrow-alt-circle-down"></i></a><a href='?orderby=created&order=asc'><i class="fas fa-arrow-alt-circle-up"></i></a></li>
+<li><a href='?orderby=votes&order=desc'>Votes:<i class="fas fa-arrow-alt-circle-down"></i></a><a href='?orderby=votes&order=asc'><i class="fas fa-arrow-alt-circle-up"></i></a></li>
+</ul>
+</div>
+</div>
+<?php if (!$items) : ?>
+    <p>There are no items to show.</p>
+<?php
+    return;
+endif;
+?>
 <?php foreach ($items as $item) :
-    $urlToShow = url("post/show/$item->id");?>
+    $db =  $this->di->get("db");
+    $sql = "SELECT sum(score) as postscore from post_votes where post_id=?;";
+    $score = $db->executeFetchAll($sql, [$item->id]);
+    $sql = "select * from post2tag where post_id=?;";
+    $posttags = $db->executeFetchAll($sql, [$item->id]);
+    $sql = "SELECT sum(answer) as totalanswer from comments where post_id=?;";
+    $answer = $db->executeFetchAll($sql, [$item->id]);
+    $urlToShowPost = url("post/show/$item->id");
+    ?>
 
     <div class=posts>
         <div class=leftpost>
-            <div class=countvotes><?= $item->score?></div>
+            <div class=countvotes><?= $score[0]->postscore?:0?></div>
             <div class=countvotes>votes</div>
-            <div class=countanswers><?= $item->answer?></div>
+            <div class=countanswers><?= $answer[0]->totalanswer?: 0?></div>
             <div class=countvotes>answers</div>
         </div>
         <div class=rightpost>
-            <div><p><a href="<?= $urlToShow ?>"><?= $item->title ?></a></p></div>
-            <div><p class=postcontent><?= $item->content ?></p></div>
+            <div><b><a href="<?= $urlToShowPost ?>"><?= $item->title ?></a></b></div>
+            <div><p class=postcontent><?= Markdown::defaultTransform($item->content) ?></p></div>
             <div>
-                <?php foreach (explode(",", $item->tags) as $tag) : ?>
-                <a class=onetag href="tag/<?= $tag ?>"><?= $tag ?></a>
-
-            <?php endforeach; ?>
+                <?php foreach ($posttags as $tag) : ?>
+                <a class=onetag href="tag/<?= $tag->tag_name ?>"><?= $tag->tag_name ?></a>
+                <?php endforeach; ?>
             </div>
             <div>Asked <?= $item->created ?></div>
         </div>

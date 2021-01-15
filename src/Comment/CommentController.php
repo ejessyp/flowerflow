@@ -57,48 +57,44 @@ class CommentController implements ContainerInjectableInterface
         $request = $this->di->get("request");
         $response = $this->di->get("response");
         $submit = $request->getPost("submit") ?: null;
-        var_dump($this->currentUser);
-        if ($submit) {
-            $comment = $request->getPost("comment") ?: null;
-            $sql = "INSERT INTO comments (comment, post_id, user_id, answer) VALUES (?, ?, ?, ?);";
-            $this->db->execute($sql, [$comment, $id, $this->userId, 0]);
-            return $response->redirect("post/show/$id");
+        if ($this->currentUser) {
+            if ($submit) {
+                $comment = $request->getPost("comment") ?: null;
+                $sql = "INSERT INTO comments (comment, post_id, user_id, answer) VALUES (?, ?, ?, ?);";
+                $this->db->execute($sql, [$comment, $id, $this->userId, 0]);
+                return $response->redirect("post/show/$id");
+            }
         }
+        $response = $this->di->get("response");
+        return $response->redirect("user/login");
     }
-
-    /**
-     * Handler with form to delete an item.
-     *
-     * @return object as a response object
-     */
-    public function deleteAction() : object
-    {
-        $page = $this->di->get("page");
-
-    }
-
-
 
     public function uppvoteAction(int $id, int $post_id) : object
     {
         $page = $this->di->get("page");
+        if ($this->currentUser) {
+            $sql = "INSERT INTO comment_votes (score, comment_id, user_id) VALUES (?, ?, ?);";
+            $this->db->execute($sql, [1, $id, $this->userId]);
 
-        $sql = "INSERT INTO comment_votes (score, comment_id, user_id) VALUES (?, ?, ?);";
-        $this->db->execute($sql, [1, $id, $this->userId]);
-
+            $response = $this->di->get("response");
+            return $response->redirect("post/show/$post_id");
+        }
         $response = $this->di->get("response");
-        return $response->redirect("post/show/$post_id");
+        return $response->redirect("user/login");
     }
 
     public function downvoteAction(int $id, int $post_id) : object
     {
         $page = $this->di->get("page");
+        if ($this->currentUser) {
+            $sql = "INSERT INTO comment_votes (score, comment_id, user_id) VALUES (?, ?, ?);";
+            $this->db->execute($sql, [-1, $id, $this->userId]);
 
-        $sql = "INSERT INTO comment_votes (score, comment_id, user_id) VALUES (?, ?, ?);";
-        $this->db->execute($sql, [-1, $id, $this->userId]);
-
+            $response = $this->di->get("response");
+            return $response->redirect("post/show/$post_id");
+        }
         $response = $this->di->get("response");
-        return $response->redirect("post/show/$post_id");
+        return $response->redirect("user/login");
     }
 
     /**
@@ -126,7 +122,7 @@ class CommentController implements ContainerInjectableInterface
     }
 
     /**
-     * Handler with form to update an item.
+     * Handler with form to reply a comment.
      *
      * @param int $id the id to answer.
      *
@@ -137,13 +133,15 @@ class CommentController implements ContainerInjectableInterface
         $request = $this->di->get("request");
         $response = $this->di->get("response");
         $submit = $request->getPost("submit") ?: null;
-
-        if ($submit) {
-            $comment = $request->getPost("comment") ?: null;
-            $sql = "INSERT INTO comments (comment, comment_reply_id, post_id, user_id, answer) VALUES (?, ?, ?, ?, ?);";
-            $this->db->execute($sql, [$comment, $id, $post_id, $this->userId, 0]);
-            return $response->redirect("post/show/$post_id");
+        if ($this->currentUser) {
+            if ($submit) {
+                $comment = $request->getPost("comment") ?: null;
+                $sql = "INSERT INTO comments (comment, comment_reply_id, post_id, user_id, answer) VALUES (?, ?, ?, ?, ?);";
+                $this->db->execute($sql, [$comment, $id, $post_id, $this->userId, 0]);
+                return $response->redirect("post/show/$post_id");
+            }
         }
+        $response = $this->di->get("response");
+        return $response->redirect("user/login");
     }
-
 }

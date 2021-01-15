@@ -20,12 +20,13 @@ if ($_SERVER["SERVER_NAME"] === "www.student.bth.se") {
         "username"        => "qipa19",
         "password"        => "f2W3UK2pqAJ7",
         "driver_options"  => [
-            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'"
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'",
+            \PDO::ATTR_EMULATE_PREPARES => true
         ],
         "fetch_mode"      => \PDO::FETCH_OBJ,
         "table_prefix"    => null,
         "session_key"     => "Anax\Database",
-        "emulate_prepares" => false,
+        // "emulate_prepares" => false,
 
         // True to be very verbose during development
         "verbose"         => false,
@@ -34,6 +35,7 @@ if ($_SERVER["SERVER_NAME"] === "www.student.bth.se") {
         "debug_connect"   => true,
     ];
 }
+
 
 return [
     "dsn"             => "mysql:host=127.0.0.1;dbname=ramverk;",
