@@ -18,6 +18,7 @@
         "files": ["src/function.php"]
     },
     "require": {
+        "anax/anax-ramverk1-me": "^1.0.0",
         "anax/database-active-record": "^2.0",
         "anax/htmlform": "^2.0",
         "michelf/php-markdown": "^1.9"
