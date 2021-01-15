@@ -18,20 +18,12 @@
         "files": ["src/function.php"]
     },
     "require": {
-<<<<<<< HEAD
         "anax/anax-ramverk1-me": "^1.0.0",
-=======
-         "anax/anax-ramverk1-me": "^1.0.0",
->>>>>>> cf73780f7c81a8b2e5dab3b64ad9956bbdb89382
         "anax/database-active-record": "^2.0",
         "anax/htmlform": "^2.0",
         "michelf/php-markdown": "^1.9"
     },
     "require-dev": {
-<<<<<<< HEAD
         "phpunit/phpunit": "^7"
-=======
-        "phpunit/phpunit": "^7" 
->>>>>>> cf73780f7c81a8b2e5dab3b64ad9956bbdb89382
     }
 }
