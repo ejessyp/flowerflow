@@ -1,7 +1,5 @@
 [![Latest Stable Version](https://poser.pugx.org/bthpan/flowerflow/v)](//packagist.org/packages/bthpan/flowerflow)
-[![Build Status](https://travis-ci.com/github/ejessyp/flowerflow.svg?branch=main)](https://travis-ci.com/ejessyp/flowerflow)
-[![CircleCI](https://circleci.com/gh/canax/remserver.svg?style=shield)](https://circleci.com/gh/ejessyp/weather)
-
+[![Build Status](https://travis-ci.com/ejessyp/flowerflow.svg?branch=main)](https://travis-ci.com/ejessyp/flowerflow)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ejessyp/flowerflow/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/ejessyp/flowerflow/?branch=main)
 [![Code Coverage](https://scrutinizer-ci.com/g/ejessyp/flowerflow/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/ejessyp/flowerflow/?branch=main)
 [![Build Status](https://scrutinizer-ci.com/g/ejessyp/flowerflow/badges/build.png?b=main)](https://scrutinizer-ci.com/g/ejessyp/flowerflow/build-status/main)
