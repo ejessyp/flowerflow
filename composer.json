@@ -8,7 +8,6 @@
             "role": "Developer"
         }
     ],
-    "minimum-stability": "beta",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
