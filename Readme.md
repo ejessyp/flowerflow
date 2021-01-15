@@ -21,3 +21,9 @@ Install the module using composer.
 ```
 composer require bthpan/flowerflow
 ```
+Stand in the dir proj
+```
+Mkdir proj
+Cd proj
+```
+rsync -av  vendor/bthpan/flowerflow/.  ./
