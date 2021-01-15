@@ -11,19 +11,40 @@
 1. php
 2. webserver (apache)
 3. composer
+4. Database mysql
+
 
 ### Installation
 
-### Step 1, install using composer
+### Step 1, install anax environment
+
+Install anax environment.
+Go to a php apache server root.
+```
+anax create proj ramverk1-me-v2
+cd proj
+```
+
+
+### Step 2, install using composer
 
 Install the module using composer.
 
 ```
 composer require bthpan/flowerflow
 ```
-Stand in the dir proj
-```
-Mkdir proj
-Cd proj
+### Step 3, rsync the files
+
+Stand in the proj dir:
 ```
 rsync -av  vendor/bthpan/flowerflow/.  ./
+```
+
+### Step 4, create databases and load initial data
+Stand in the proj/sql/ddl dir:
+Login database with root:
+```
+source ddl.sql;
+```
+Start using http://localhost/proj/htdocs/
+Try login with user: admin/12345.
